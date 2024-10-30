@@ -30,3 +30,11 @@ Documents available for this topic:
 * [Execute an SQL Statement on an External Database](/refguide/execute-an-sql-statement-on-an-external-database/)
 
    Describes how to execute an SQL statement on relational external databases using the Database Connector.
+
+## Read More
+
+* [External Database Connector](/appstore/modules/external-database-connector/)
+* [Query External Database](/refguide/query-external-database/)
+* [Mendix Business Events](appstore/services/business-events/)
+* [Mendix Event Broker](/services/event-broker/)
+* [Import Data from File](/refguide/import-data-from-file/)
