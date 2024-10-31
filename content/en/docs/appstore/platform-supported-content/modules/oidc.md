@@ -41,9 +41,7 @@ Alternatives to using OIDC SSO for managing single sign-on are:
 * **Works with Responsive web app and PWA:** OIDC SSO module supports both responsive web app and progressive web app (PWA). If you are building a native mobile app, you need to use [Mobile SSO](https://marketplace.mendix.com/link/component/223516) module for your app. For more information, see [Building a Responsive Web App](/quickstarts/responsive-web-app/), [Progressive Web App](/refguide/mobile/introduction-to-mobile-technologies/progressive-web-app/), and [Native Mobile](/refguide/mobile/introduction-to-mobile-technologies/native-mobile/).
 * **API security:** If your app exposes APIs, such as an OData API, it is best security practice to use OAuth Access Tokens (also known as bearer tokens or JWT tokens) instead of Basic Authentication or API keys. You can use the OIDC SSO module to validate these Access Tokens and check if they have right authorization (i.e., the right OAuth scopes) for accessing your API endpoint. For example, you may want to allow a specific user or client to perform a GET (read) request but not a POST or PATCH (write) request. The OIDC module supports processing Access Tokens obtained via both SSO and the OAuth client credential grant.
 
-### Features and Limitations
-
-#### Features
+### Features
 
 The OIDC SSO module supports the following features:
 
@@ -73,7 +71,24 @@ The OIDC SSO module supports the following features:
 
     * Built primarily in standard Mendix components (minimal Java) to allow for easy customization and ongoing development.
 
-#### OIDC Protocol Adherence
+### Limitations
+
+The OIDC SSO module does not yet support the following:
+
+* Requesting claims via the 'claims' query parameter, as per OIDC specs
+* Other client authentication methods such as using asymmetric keys (“private_key_jwt”)
+* Delegating authorization using OAuth-scopes; this currently requires a custom microflow for parsing of Access Tokens
+* Mobile apps
+* Controlling the configuration using constants requires an app restart
+
+The OIDC SSO module also has the following limitations:
+
+* If an end-user accesses your app via a deeplink, the end-user is not already signed in, and you have configured multiple IdPs, only one IdP can be used to sign the end-user in.
+* If you use both the [SAML](/appstore/modules/saml/) module and the OIDC SSO module in the same app, each end-user can only authenticate using one IdP.
+* If OIDC SSO is used for API security, it does not validate the value of the "aud" claim, as suggested by [RFC 9068](https://datatracker.ietf.org/doc/html/rfc9068#section-4). Customers should prevent cross-JWT confusion by using unique scope values.
+* The Admin screens have separate tabs for configuring clients that use the Client Credential grant for API security and for situations where your app is used for both SSO and API security. If the first version of your app uses only OIDC SSO for API security and you want to introduce SSO in a later version, the IdP configuration needs to be re-entered on the other tab.
+
+### OIDC Protocol Adherence
 
 For readers with more knowledge of the OAuth and OIDC protocol:
 
@@ -94,23 +109,6 @@ For readers with more knowledge of the OAuth and OIDC protocol:
 * Supports response_mode=query and response_mode=form_post
 * Helps you implement an OAuth Resource Server that receives an Access Token which is obtained by a client via either Authorization Code grant or Client Credential grant.
 * When the OIDC SSO module secures an API with the Client Credential grant, the `sub` as claim (which contains either user-id or client-id) should always be available in the access token as per [RFC 9068](https://datatracker.ietf.org/doc/html/rfc9068#name-data-structure).  If it is not included, the module will look for `client_id`. To be compliant with Microsoft's Entra ID and Okta, it will use `app_id` or `cid` as alternatives to `client_id`. Any of these client identifiers are used to create a user in the Mendix application, allowing the Mendix security model to apply not only to users (human identities) but also to clients (machine identities).
-
-#### Limitations
-
-The OIDC SSO module does not yet support the following:
-
-* Requesting claims via the 'claims' query parameter, as per OIDC specs
-* Other client authentication methods such as using asymmetric keys (“private_key_jwt”)
-* Delegating authorization using OAuth-scopes; this currently requires a custom microflow for parsing of Access Tokens
-* Mobile apps
-* Controlling the configuration using constants requires an app restart
-
-The OIDC SSO module also has the following limitations:
-
-* If an end-user accesses your app via a deeplink, the end-user is not already signed in, and you have configured multiple IdPs, only one IdP can be used to sign the end-user in.
-* If you use both the [SAML](/appstore/modules/saml/) module and the OIDC SSO module in the same app, each end-user can only authenticate using one IdP.
-* If OIDC SSO is used for API security, it does not validate the value of the "aud" claim, as suggested by [RFC 9068](https://datatracker.ietf.org/doc/html/rfc9068#section-4). Customers should prevent cross-JWT confusion by using unique scope values.
-* The Admin screens have separate tabs for configuring clients that use the Client Credential grant for API security and for situations where your app is used for both SSO and API security. If the first version of your app uses only OIDC SSO for API security and you want to introduce SSO in a later version, the IdP configuration needs to be re-entered on the other tab.
 
 ## Dependencies
 
@@ -243,12 +241,12 @@ Follow the instructions to [set an encryption key in the Encryption module](/app
 
 ## IdP Configuration {#idpconfiguration}
 
-To connect your App with your IdP, you need to configure both your IdP (as described in the [Configure your App at your IdP](#configure_app_idp) section below) and your Mendix application. For the Mendix application setup, you can choose between two methods:
+To connect your App with your IdP, you need to configure both your IdP (as described in the [App Configuration at Your IdP](#configure_app_idp) section below) and your Mendix application. For the Mendix application setup, you can choose between two methods:
 
-* [Deploytime configuration of your IdP at your App](#deploytime-idp-configuration)
-* [Runtime configuration of your IdP at your App](#runtime-idp-app)
+* [Deploytime configuration of your IdP](#deploytime-idp-configuration)
+* [Runtime configuration of your IdP](#runtime-idp-app)
 
-### Configure Your App at Your IdP {#configure_app_idp}
+### App Configuration at Your IdP {#configure_app_idp}
 
 #### General OIDC Providers {#general-providers}
 
@@ -278,7 +276,7 @@ By adding a custom claim to the App Registration’s Expose an API tab and reque
 
 For information about configuring Amazon Cognito for the OIDC SSO module, see [Amazon Cognito: Configuring Amazon Cognito](/appstore/modules/aws/amazon-cognito/#cognito-provider).
 
-### Runtime Configuration of Your IdP at Your App {#runtime-idp-app}
+### Runtime Configuration of Your IdP{#runtime-idp-app}
 
 This section describes how you can configure your IdP in your Mendix app using the Admin UIs provided by the OIDC SSO module. These screens offer two tabs:
 
@@ -359,7 +357,7 @@ Now, you can acquire tokens which can be validated using JWKS URI.
 
 For more information about configuring your app for OIDC with Amazon Cognito, see [Amazon Cognito: Configuring the Required Settings in Your Mendix App](/appstore/modules/aws/amazon-cognito/#cognito).
 
-### Deploytime Configuration of Your IdP at Your App{#deploytime-idp-configuration}
+### Deploytime Configuration of Your IdP{#deploytime-idp-configuration}
 
 #### Automated Deploy-time SSO Configuration{#deploy-time}
 
@@ -636,7 +634,7 @@ By default, the OIDC SSO module uses the **IdPs for API security only** configur
 
 ## Optional Features{#optional}
 
-### Performing API Calls on Behalf of an Authenticated User
+### API Calls on Behalf of an Authenticated User
 
 You might want to make API calls to other apps/services on behalf of the end-user. As you have used the OIDC module to authenticate the end-user to your app, your app also has an access token for this end-user.
 
@@ -732,7 +730,7 @@ To parse access tokens, you need to do the following:
 1. Create a secure REST API endpoint following the instructions in [API Authentication](#api-authentication), above.
 1. Run your app and sign in as an administrator, for example `Demo_administrator`.
 1. Configure the client information in the OIDC Client configuration screen.
-1. Check **Enable Access Token Parsing** to parse access tokens when performing [Runtime Configuration of Your IdP at Your App](#runtime-idp-app).
+1. Check **Enable Access Token Parsing** to parse access tokens when performing [Runtime Configuration of Your IdP](#runtime-idp-app).
 1. Select the appropriate microflow to parse the access token as described in the relevant section below. If you have added a new microflow, you will need to refresh the module containing your microflow as described in [Installing Mx Model Reflection](#mxmodelreflection).
 
 {{% alert color="info" %}}
@@ -745,7 +743,7 @@ In version 2.0.0 and above of the OIDC SSO module you will also find a microflow
 This section is only relevant if you are a Mendix partner and you want to integrate your app with the Siemens SAM IdP.
 {{% /alert %}}
 
-To parse of SAM access tokens you need to do the following when performing [Runtime Configuration of Your IdP at Your App](#runtime-idp-app):
+To parse of SAM access tokens you need to do the following when performing [Runtime Configuration of Your IdP](#runtime-idp-app):
 
 1. Select *OIDC.Default_SAM_TokenProcessing_CustomATP* as the **custom AccessToken processing microflow**.
 
@@ -871,7 +869,7 @@ A standard logout action will end an end-user's Mendix session, but will not end
 
 To do this, add a menu item or button for your end-users that calls the nanoflow `ACT_Logout`.
 
-### Using ACR to Request Authentication Method
+### Using ACR for Authentication Method Request
 
 By default, the OIDC SSO module does not care how users are signed in at your IdP, that is left to the discretion of the IdP. In some cases your IdP may support different methods for end-users to be authenticated and your app may want to indicate a preference.
 
@@ -879,7 +877,7 @@ The following sections describe the steps needed to make use of the ACR mechanis
 
 ACR is available in version 2.3.0 and above of the OIDC SSO module.
 
-#### Configuring Authentication Methods That Can Be Requested at Your IdP
+#### Configuring Authentication Methods at Your IdP
 
 To configure the ACR value (or values) in the OIDC SSO module, follow these steps:
 
@@ -897,7 +895,7 @@ When you have configured multiple ACR values for your IdP, the OIDC module shows
 
 {{< figure src="/attachments/appstore/platform-supported-content/modules/oidc/login-acr-options.png" class="no-border" >}}
 
-#### Customizing the Login Page
+#### Customizing Login Page
 
 If you want to customize this login page for your end-users, perform the following steps:
 

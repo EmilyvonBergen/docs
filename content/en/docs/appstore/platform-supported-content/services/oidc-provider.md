@@ -418,7 +418,7 @@ You need to configure the OIDC SSO module in your app which is using the IAM bro
 
     1. When you get to [IdP Configuration](/appstore/modules/oidc/#idpconfiguration), you already have the values from the previous section.
 
-    1. In the [Runtime Configuration of Your IdP at Your App](/appstore/modules/oidc/#runtime-idp-app) section, add a client configuration and use the following values:
+    1. In the [Runtime Configuration of Your IdP](/appstore/modules/oidc/#runtime-idp-app) section, add a client configuration and use the following values:
 
         * **Client ID** – the **Client ID** of the IAM Broker
         * **Client Authentication Method** – *Client ID and Secret*

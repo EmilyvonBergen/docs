@@ -185,7 +185,7 @@ In this section, you can configure SSO authentication for your users logging in 
 
 ### IdP Integration (OIDC)
 
-You can configure SSO authentication with the OIDC protocol. For more information, see [Runtime Configuration of Your IdP at Your App](/appstore/modules/oidc/#runtime-idp-app).
+You can configure SSO authentication with the OIDC protocol. For more information, see [Runtime Configuration of Your IdP](/appstore/modules/oidc/#runtime-idp-app).
 
 ### IdP Integration (SAML)
 
