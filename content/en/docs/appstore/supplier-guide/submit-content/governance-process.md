@@ -1,6 +1,7 @@
 ---
 title: "Governance Process"
 url: /appstore/submit-content/governance-process/
+weight: 1
 description: "Describes the Mendix processes for approving and reviewing Marketplace content."
 ---
 
